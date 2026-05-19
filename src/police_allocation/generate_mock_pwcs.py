@@ -9,7 +9,7 @@ def generate_mock_pwcs(num_lsoas=30, seed=123):
     pwc_y = np.random.uniform(180000, 195000, num_lsoas)
     
     weights = np.random.choice(
-        [1, 2, 3], 
+        [0.05, 0.2, 0.8], 
         size=num_lsoas, 
         p=[0.45,0.35,0.2] 
     )
@@ -22,7 +22,7 @@ def generate_mock_pwcs(num_lsoas=30, seed=123):
         'pwc_x': pwc_x,
         'pwc_y': pwc_y,
         'crime_weight': weights,
-        'speed_limit_kmh': speed_limits,
+        'speed_limit_kph': speed_limits,
         'congestion_scaler': congestion_scalers
     })
 
