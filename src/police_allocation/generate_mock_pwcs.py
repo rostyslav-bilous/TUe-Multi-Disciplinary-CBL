@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def generate_mock_pwcs(num_lsoas=30, seed=123):
+def generate_mock_pwcs(num_lsoas=5, seed=123):
     
     np.random.seed(seed)
     lsoa_ids = [f'LSOA_{i}' for i in range(num_lsoas)]
