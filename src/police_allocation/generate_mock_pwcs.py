@@ -1,17 +1,17 @@
 import numpy as np
 import pandas as pd
 
-def generate_mock_pwcs(num_lsoas=5, seed=123):
+def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
     
     np.random.seed(seed)
     lsoa_ids = [f'LSOA_{i}' for i in range(num_lsoas)]
-    pwc_x = np.random.uniform(500000, 515000, num_lsoas) # 15x15km grid
-    pwc_y = np.random.uniform(180000, 195000, num_lsoas)
+    pwc_x = np.random.uniform(500000, 500000+width*1000, num_lsoas) # 15x15km grid
+    pwc_y = np.random.uniform(180000, 180000+width*1000, num_lsoas)
     
     weights = np.random.choice(
-        [0.05, 0.2, 0.8], 
+        [0.1, 0.2, 0.7], 
         size=num_lsoas, 
-        p=[0.45,0.35,0.2] 
+        p=[0.40,0.35,0.25] 
     )
 
     speed_limits = np.full(num_lsoas, 50)

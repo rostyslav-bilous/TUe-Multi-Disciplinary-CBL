@@ -1,5 +1,5 @@
-impoty numpy as np
-impoty pandas as pd
+import numpy as np
+import pandas as pd
 
 def choose_next_site(df_lsoas, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     '''
@@ -9,7 +9,7 @@ def choose_next_site(df_lsoas, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     }
     '''
 
-    num_lsoas = len(df_lsoas)
+    nr_lsoas = len(df_lsoas)
     weights = df_lsoas['crime_weight'].values
 
     max_delta_twec = -1
@@ -40,8 +40,9 @@ def choose_next_site(df_lsoas, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     affected_r2 = rm_r2[:, best_candidate]
     allocation['n'] += affected_r1
     allocation['m'] += affected_r2
+    twec = calculate_twec(allocation, weights, p, q)
 
-    return allocation, df.loc[best_candidate, 'lsoa_id']
+    return allocation, df_lsoas.loc[best_candidate, 'lsoa_id'], twec
 
 
 def calculate_twec(allocation, weights, p, q):
