@@ -1,5 +1,5 @@
 ﻿# TUe-Multi-Disciplinary-CBL
-## To access Streamlit app
+## To access Streamlit app on Linux
 Navigate to `/src/viz/`
 ```
 python3 -m venv .venv
@@ -11,3 +11,5 @@ Open `http://localhost:8501`.
 Later, before running the app and working on the website source code again, type `source .venv/bin/activate` 
 
 Remember to exit the virtual environment by typing `deactivate` when closing the app or finishing working on the website.
+
+For Windows the virtual environment folder has slightly different structure.
