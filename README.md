@@ -1,5 +1,6 @@
 ﻿# TUe-Multi-Disciplinary-CBL
-## To access Streamlit app
+## Access Streamlit app
+Probably the best way would be to run it on our VPS and use ssh port forwarding to access the app. 
 Navigate to `/src/viz/`
 
 Install dependencies either globally:
