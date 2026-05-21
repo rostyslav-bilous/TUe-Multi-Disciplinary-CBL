@@ -11,7 +11,7 @@ OR in a virtual environment (RECOMMENDED):
 ```
 python3 -m venv .venv
 source .venv/bin/activate
-pip nstall streamlit leafmap
+pip install streamlit leafmap
 streamlit run app.py
 ```
 Open `http://localhost:8501`. 
