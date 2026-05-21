@@ -1,5 +1,5 @@
 ﻿# TUe-Multi-Disciplinary-CBL
-## To access Streamlit app on Linux
+## To access Streamlit app
 Navigate to `/src/viz/`
 
 Install dependencies either globally:
@@ -19,6 +19,6 @@ Later, before running the app and working on the website source code again, type
 
 Remember to exit the virtual environment by typing `deactivate` when closing the app or finishing working on the website.
 
-On Windows the virtual environment folder has slightly different structure.
+**_On Windows the virtual environment folder has slightly different structure._**
 
 To install the exact versions of all dependencies: `pip install -r requirements.txt`, although it installs more than we need for the app (like `geopandas`).
