@@ -7,7 +7,7 @@ Install dependencies either globally:
 pip install streamlit leafmap
 streamlit run app.py
 ```
-OR in a virtual environment (RECOMMENDED):
+OR in a virtual environment:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
