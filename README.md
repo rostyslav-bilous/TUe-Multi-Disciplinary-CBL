@@ -2,9 +2,9 @@
 ## 🚀 Setup & Launch on Linux/macOS/WSL2:
 Navigate to project's root folder. In your terminal run these three commands:
 ```
-make setup
-make preprocess
-make app
+make setup        # initialize venv and install src as a local package
+make preprocess   # preprocess data
+make app          # launch web app
 ```
 Open `http://localhost:8501`. 
 
