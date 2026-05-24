@@ -1,5 +1,5 @@
 ﻿# TUe-Multi-Disciplinary-CBL
-### Access Streamlit app on Linux/macOS/WSL2
+## Setup the environment and access the web app on Linux/macOS/WSL2:
 Navigate to root folder
 ```
 make setup
