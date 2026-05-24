@@ -12,7 +12,7 @@ _This does not include setup for the execution of cells within `.ipynb` files YE
 ## 🛠️ Development Manual
 !!IMPORTANT: all source code files must be placed inside `src/`.
 
-When working with scripts inside `src/`, activate your virtual env:
+When working with scripts inside `src/`, activate your virtual environment:
 ```
 source .venv/bin/activate
 ```
