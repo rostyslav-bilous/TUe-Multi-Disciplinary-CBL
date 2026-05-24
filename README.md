@@ -1,6 +1,6 @@
 ﻿# TUe-Multi-Disciplinary-CBL
 ## 🚀 Setup & Launch on Linux/macOS/WSL2:
-Navigate to project's root folder. In your terminal run these three commands:
+Navigate to project's root folder in your terminal and run these three commands:
 ```
 make setup        # initialize venv and install src as a local package
 make preprocess   # preprocess data
