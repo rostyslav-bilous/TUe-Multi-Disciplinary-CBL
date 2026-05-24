@@ -1,10 +1,12 @@
 import geopandas as gpd
 import pandas as pd
+from src.config import RAW_DIR
+from src.config import DATA_DIR
 
-def split_uk_by_region():
-    boundaries = gpd.read_file("data/msoa_2021_Boundaries_BSC.gpkg", engine="pyogrio")
-    centroids = pd.read_csv("data/msoa_2021_PWCs.csv")
-    lookup = pd.read_csv("data/msoa_region_lookup_2022.csv")
+def split_uk_geometries_by_region():
+    boundaries = gpd.read_file(RAW_DIR / "msoa_2021_Boundaries_BSC.gpkg", engine="pyogrio")
+    centroids = pd.read_csv(RAW_DIR / "msoa_2021_PWCs.csv")
+    lookup = pd.read_csv(RAW_DIR / "msoa_region_lookup_2022.csv")
 
     regions = lookup['RGN22NM'].unique()
     
@@ -14,6 +16,7 @@ def split_uk_by_region():
 
         # filter boundaries to match filtered MSOAs
         gdf_region_bounds = boundaries[boundaries['MSOA21CD'].isin(region_msoa_codes)].copy()
+        gdf_region_bounds = gdf_region_bounds.to_crs("EPSG:27700") # British National Grid - force coordinates in meters
         gdf_region_bounds = gdf_region_bounds.reset_index(drop=True)
 
         # filter centroids to match filtered MSOAs
@@ -21,16 +24,16 @@ def split_uk_by_region():
         gdf_region_cents = gpd.GeoDataFrame(
             region_cents,
             geometry=gpd.points_from_xy(region_cents['X'], region_cents['Y']),
-            crs="EPSG:4326"
+            crs="EPSG:4326" # angle coordinates are used by default
         )
-        gdf_region_cents = gdf_region_cents.to_crs("EPSG:27700")
+        gdf_region_cents = gdf_region_cents.to_crs("EPSG:27700") # translate angle coordinates to meters
         gdf_region_cents = gdf_region_cents.reset_index(drop=True)
-
 
         # save GeoPackage file
         region_name = region.replace(' ', '_')
-        gdf_region_bounds.to_file(f'data/boundaries_{region_name}.gpkg', driver="GPKG", layer="msoa_boundaries")
-        gdf_region_bounds.to_file(f'data/centroids_{region_name}.gpkg', driver="GPKG", layer="msoa_centroids")
+        save_path = DATA_DIR / f"{region_name}.gpkg"
+        gdf_region_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
+        gdf_region_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
 
 if __name__ == "__main__":
-    split_uk_by_region()
+    split_uk_geometries_by_region()
