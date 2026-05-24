@@ -26,9 +26,12 @@ def get_spatial_data(file_path, layer_name):
     gdf = gpd.read_file(file_path, layer=layer_name, engine="pyogrio")
     return gdf.to_crs("EPSG:4326") # return in angle coordinates for leafmap rendering
 
-gdf_bounds = get_spatial_data(DATA_DIR / "London.gpkg", "msoa_boundaries")
-gdf_cents = get_spatial_data(DATA_DIR / "London.gpkg", "population_centroids")
-m.add_gdf(gdf=gdf_bounds, layer_name="MSOA Polygons")
+gdf_bounds_London = get_spatial_data(DATA_DIR / "London.gpkg", "msoa_boundaries")
+gdf_bounds_Wales = get_spatial_data(DATA_DIR / "Wales.gpkg", "msoa_boundaries")
+# gdf_cents = get_spatial_data(DATA_DIR / "London.gpkg", "population_centroids")
+m.add_gdf(gdf=gdf_bounds_London, layer_name="MSOA Polygons London")
+m.add_gdf(gdf=gdf_bounds_Wales, layer_name="MSOA Polygons Wales")
+# m.add_gdf(gdf=gdf_cents, layer_name="MSOA PWCs")
 
 m.to_streamlit()
 
