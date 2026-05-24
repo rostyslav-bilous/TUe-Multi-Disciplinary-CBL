@@ -21,7 +21,7 @@ You should see `(venv)` appear before the prompt line. When exiting the workspac
 deactivate
 ```
 
-When running standalone scripts from your terminal, always stand at the project root folder and execute them using the module flag (-m) rather than direct file paths. This is because `src` is a packgage - it guarantees easier and safer path resolution (for example, looking up DATA_DIR from src.config inside the preprocessing pipeline:
+When running standalone scripts from your terminal, always stand at the project root folder and execute them using the module flag (-m) rather than direct file paths. This is because `src` is installed as a package for easier and safer path resolution (for example, looking up DATA_DIR from src.config inside the preprocessing pipeline):
 ```
 python3 -m src.preprocessing.split_uk_geometries_by_region
 ```
