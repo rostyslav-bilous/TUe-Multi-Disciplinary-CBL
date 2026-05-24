@@ -1,25 +1,9 @@
 ﻿# TUe-Multi-Disciplinary-CBL
-## Access Streamlit app
-Probably the best way would be to run it on our VPS and use ssh port forwarding to access the app. 
-Navigate to `/src/viz/`
-
-Install dependencies either globally:
+### Access Streamlit app on Linux/macOS/WSL2
+Navigate to root folder
 ```
-pip install streamlit leafmap
-streamlit run app.py
+make setup
+make preprocess
+make app
 ```
-OR in a virtual environment:
-```
-python3 -m venv .venv
-source .venv/bin/activate
-pip install streamlit leafmap
-streamlit run app.py
-```
-Open `http://localhost:8501`. 
-Later, before running the app and working on the website source code again, type `source .venv/bin/activate` 
-
-Remember to exit the virtual environment by typing `deactivate` when closing the app or finishing working on the website.
-
-**_On Windows the virtual environment folder has slightly different structure._**
-
-To install the exact versions of all dependencies: `pip install -r requirements.txt`, although it installs more than we need for the app (like `geopandas`).
+Open `http://localhost:8501`
