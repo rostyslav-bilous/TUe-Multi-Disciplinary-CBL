@@ -1,5 +1,10 @@
 ﻿# TUe-Multi-Disciplinary-CBL
 ## 🚀 Setup & Launch on Linux/macOS/WSL2:
+
+If you are running on **Ubuntu/Debian**, ensure your system has Python's virtual environment development binaries installed:
+```
+sudo apt update && sudo apt install python3-venv python3-pip -y
+```
 Navigate to project's root folder in your terminal and run these three commands:
 ```
 make setup        # initialize venv and install src as a local package
