@@ -11,5 +11,5 @@ preprocess:
 	@echo "Preprocessing complete."
 
 app:
-	.venv/bin/streamlit run src/app/app.py
+	.venv/bin/python3 -m streamlit run src/app/app.py
 

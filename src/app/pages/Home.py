@@ -2,8 +2,9 @@ import streamlit as st
 import geopandas as gpd
 from pathlib import Path
 import leafmap.foliumap as leafmap
+from src.config import DATA_DIR
 
-CURRENT_DIR = Path(__file__).parent
+
 st.set_page_config(layout="wide")
 st.title("🏠 Home")
 
@@ -25,8 +26,8 @@ def get_spatial_data(file_path, layer_name):
     gdf = gpd.read_file(file_path, layer=layer_name, engine="pyogrio")
     return gdf.to_crs("EPSG:4326") # return in angle coordinates for leafmap rendering
 
-gdf_bounds = get_spatial_data("src/preprocessing/processed_data/London.gpkg", "msoa_boundaries")
-gdf_cents = get_spatial_data("src/preprocessing/processed_data/London.gpkg", "population_centroids")
+gdf_bounds = get_spatial_data(DATA_DIR / "London.gpkg", "msoa_boundaries")
+gdf_cents = get_spatial_data(DATA_DIR / "London.gpkg", "population_centroids")
 m.add_gdf(gdf=gdf_bounds, layer_name="MSOA Polygons")
 
 m.to_streamlit()

@@ -32,6 +32,7 @@ def split_uk_geometries_by_region():
         # save GeoPackage file
         region_name = region.replace(' ', '_')
         save_path = DATA_DIR / f"{region_name}.gpkg"
+        print(save_path)
         gdf_region_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
         gdf_region_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
 
