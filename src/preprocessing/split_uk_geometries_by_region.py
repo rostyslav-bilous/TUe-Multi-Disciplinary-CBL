@@ -36,5 +36,7 @@ def split_uk_geometries_by_region():
         gdf_region_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
         gdf_region_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
 
+    pd.Series(regions).to_csv(DATA_DIR / "region_names.csv", index=False)
+    
 if __name__ == "__main__":
     split_uk_geometries_by_region()
