@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def choose_next_site(df_lsoas, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
+def choose_next_site(gdf, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     '''
     allocation = {
         "n": np.array of r1 unit counts for LSAOs,
@@ -9,15 +9,15 @@ def choose_next_site(df_lsoas, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     }
     '''
 
-    nr_lsoas = len(df_lsoas)
-    weights = df_lsoas['crime_weight'].values
+    nr_msoas = len(gdf)
+    weights = gdf['crime_weight'].values
 
     max_delta_twec = -1
     best_candidate = None
     
     current_twec = calculate_twec(allocation, weights, p, q)
 
-    for i in range(nr_lsoas):
+    for i in range(nr_msoas):
 
         # add site i's coverage
         affected_r1 = rm_r1[:, i]   
@@ -42,7 +42,7 @@ def choose_next_site(df_lsoas, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     allocation['m'] += affected_r2
     twec = calculate_twec(allocation, weights, p, q)
 
-    return allocation, df_lsoas.loc[best_candidate, 'lsoa_id'], twec
+    return allocation, gdf.loc[best_candidate, 'lsoa_id'], twec
 
 
 def calculate_twec(allocation, weights, p, q):

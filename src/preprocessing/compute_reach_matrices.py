@@ -1,35 +1,34 @@
 import pandas as pd
 import numpy as np
 from scipy.spatial import distance_matrix
+from src.preprocessing.generate_mock_pwcs import generate_mock_pwcs
 
-from generate_mock_pwcs import generate_mock_pwcs
+def compute_reach_matrices(gdf, r1_min=5, r2_min=10):
 
-def compute_reach_matrices(gdf):
-
-    dist_matrix_km = distance_matrix(df[['x', 'y']], df[['x', 'pwc_y']]) / 1000.0 # pairwise distances in km
+    dist_matrix_km = distance_matrix(gdf[['X', 'Y']], gdf[['X', 'Y']]) / 1000.0 # pairwise distances in km
     
-    time1 = 5 / 60 # 5 min in h
-    time2 = 10 / 60 # 10 min in h
+    r1_min = 5 / 60 # 5 min in h
+    r2_min = 10 / 60 # 10 min in h
 
-    df['r1_km'] = df['speed_limit_kph'] * df['congestion_scaler'] * time1
-    df['r2_km'] = df['speed_limit_kph'] * df['congestion_scaler'] * time2
+    gdf['r1_km'] = gdf['speed_limit_kph'] * gdf['congestion_scaler'] * r1_min
+    gdf['r2_km'] = gdf['speed_limit_kph'] * gdf['congestion_scaler'] * r2_min
 
-    nr_lsoas = len(df)
+    nr_points = len(gdf)
 
     # compute coverage matrices for r1 and r2 
-    # i(row) is LSOA and j(column) is the potential police site
-    # row i represents which sites j cover LSOA i
-    rm_r1 = np.zeros((nr_lsoas, nr_lsoas), dtype=bool)
-    rm_r2 = np.zeros((nr_lsoas, nr_lsoas), dtype=bool)
+    # i(row) is MSOA and j(column) is the potential police site
+    # row i represents which sites j cover MSOA i
+    rm_r1 = np.zeros((nr_points, nr_points), dtype=bool)
+    rm_r2 = np.zeros((nr_points, nr_points), dtype=bool)
 
-    for j in range(nr_lsoas):
-        lsoa_r1_window = df.loc[j, 'r1_km']
-        lsoa_r2_window = df.loc[j, 'r2_km']
+    for j in range(nr_points):
+        r1_window = gdf.loc[j, 'r1_km']
+        r2_window = gdf.loc[j, 'r2_km']
 
-        for i in range(nr_lsoas):
+        for i in range(nr_points):
             distance = dist_matrix_km[i, j]
-            if distance <= lsoa_r1_window: rm_r1[i, j] = True
-            elif distance <= lsoa_r2_window: rm_r2[i, j] = True
+            if distance <= r1_window: rm_r1[i, j] = True
+            elif distance <= r2_window: rm_r2[i, j] = True
     
     return rm_r1, rm_r2, dist_matrix_km
 

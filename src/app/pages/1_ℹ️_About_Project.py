@@ -33,11 +33,11 @@ with first_cont:
     for region in selected_regions:
         gdf_bounds = get_spatial_data(DATA_DIR / f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries")
         gdf_cents = get_spatial_data(DATA_DIR / f"{region.replace(' ', '_')}.gpkg", "population_centroids")
-        print(gdf_cents)
-        print(gdf_bounds)
         poly_style = {'color': 'black', 'fillColor': 'blue', 'fillOpacity': 0.3, "weight": 1}
         m.add_gdf(gdf=gdf_bounds, layer_name=f"Bounds {region}", style=poly_style)
         m.add_gdf(gdf=gdf_cents, layer_name=f"Cetnts {region}")
+
+        print(gdf_cents)
 
     with map_col:
         st.subheader("MSOA 2021 Map", text_alignment='right')

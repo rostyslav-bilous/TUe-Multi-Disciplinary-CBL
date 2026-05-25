@@ -16,7 +16,7 @@ def split_uk_geometries_by_region():
 
         # filter boundaries to match filtered MSOAs
         gdf_region_bounds = boundaries[boundaries['MSOA21CD'].isin(region_msoa_codes)].copy()
-        gdf_region_bounds = gdf_region_bounds.to_crs("EPSG:27700") # British National Grid - force coordinates in meters
+        gdf_region_bounds = gdf_region_bounds.to_crs("EPSG:4326") # convert to angle coordinates
         gdf_region_bounds = gdf_region_bounds.reset_index(drop=True)
 
         # filter centroids to match filtered MSOAs
@@ -26,6 +26,7 @@ def split_uk_geometries_by_region():
             geometry=gpd.points_from_xy(region_cents['X'], region_cents['Y']),
             crs="EPSG:27700" # meter coordinates are used by default
         )
+        gdf_region_cents.to_crs("EPSG:4326")
         gdf_region_cents = gdf_region_cents.reset_index(drop=True)
 
         # save GeoPackage file

@@ -6,7 +6,7 @@ def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
     
     np.random.seed(seed)
     lsoa_ids = [f'LSOA_{i}' for i in range(num_lsoas)]
-    pwc_x = np.random.uniform(500000, 500000+width*1000, num_lsoas) # 15x15km grid
+    pwc_x = np.random.uniform(500000, 500000+width*1000, num_lsoas) # 15x15km grid by default
     pwc_y = np.random.uniform(180000, 180000+width*1000, num_lsoas)
     
     weights = np.random.choice(
@@ -20,8 +20,8 @@ def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
     geometry = gpd.points_from_xy(pwc_x, pwc_y)
     gdf = gpd.GeoDataFrame({
         'lsoa_id': lsoa_ids,
-        'x': pwc_x,
-        'y': pwc_y,
+        'X': pwc_x,
+        'Y': pwc_y,
         'crime_weight': weights,
         'speed_limit_kph': speed_limits,
         'congestion_scaler': congestion_scalers,
@@ -29,7 +29,6 @@ def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
         geometry=geometry,
         crs="EPSG:27700" # meters
         )
-
     return gdf
 
 if __name__ == "__main__":
