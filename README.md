@@ -21,7 +21,7 @@ When working with scripts inside `src/`, activate your virtual environment:
 ```
 source .venv/bin/activate
 ```
-You should see `(venv)` appear before the prompt line. When exiting the workspace deactivate venv:
+You should see `(.venv)` appear before the prompt line. When exiting the workspace deactivate venv:
 ```
 deactivate
 ```

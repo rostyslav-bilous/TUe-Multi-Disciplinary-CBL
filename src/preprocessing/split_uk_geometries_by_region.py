@@ -24,9 +24,8 @@ def split_uk_geometries_by_region():
         gdf_region_cents = gpd.GeoDataFrame(
             region_cents,
             geometry=gpd.points_from_xy(region_cents['X'], region_cents['Y']),
-            crs="EPSG:4326" # angle coordinates are used by default
+            crs="EPSG:27700" # meter coordinates are used by default
         )
-        gdf_region_cents = gdf_region_cents.to_crs("EPSG:27700") # translate angle coordinates to meters
         gdf_region_cents = gdf_region_cents.reset_index(drop=True)
 
         # save GeoPackage file

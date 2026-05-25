@@ -4,9 +4,9 @@ from scipy.spatial import distance_matrix
 
 from generate_mock_pwcs import generate_mock_pwcs
 
-def compute_reach_matrices(df):
+def compute_reach_matrices(gdf):
 
-    dist_matrix_km = distance_matrix(df[['pwc_x', 'pwc_y']], df[['pwc_x', 'pwc_y']]) / 1000.0 # pairwise distances in km
+    dist_matrix_km = distance_matrix(df[['x', 'y']], df[['x', 'pwc_y']]) / 1000.0 # pairwise distances in km
     
     time1 = 5 / 60 # 5 min in h
     time2 = 10 / 60 # 10 min in h

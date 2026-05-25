@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import geopandas as gpd
 
 def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
     
@@ -16,17 +17,20 @@ def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
 
     speed_limits = np.full(num_lsoas, 50)
     congestion_scalers = np.full(num_lsoas, 1)
-
-    df = pd.DataFrame({
+    geometry = gpd.points_from_xy(pwc_x, pwc_y)
+    gdf = gpd.GeoDataFrame({
         'lsoa_id': lsoa_ids,
-        'pwc_x': pwc_x,
-        'pwc_y': pwc_y,
+        'x': pwc_x,
+        'y': pwc_y,
         'crime_weight': weights,
         'speed_limit_kph': speed_limits,
-        'congestion_scaler': congestion_scalers
-    })
+        'congestion_scaler': congestion_scalers,
+    },
+        geometry=geometry,
+        crs="EPSG:27700" # meters
+        )
 
-    return df
+    return gdf
 
 if __name__ == "__main__":
     mock_data = generate_mock_pwcs(num_lsoas=30)

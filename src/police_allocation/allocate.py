@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from generate_mock_pwcs import generate_mock_pwcs
-from compute_reach_matrices import compute_reach_matrices
-from choose_next_site import choose_next_site, calculate_twec
+from src.preprocessing.generate_mock_pwcs import generate_mock_pwcs
+from src.preprocessing.compute_reach_matrices import compute_reach_matrices
+from scr.police_allocation.choose_next_site import choose_next_site, calculate_twec
 
 def allocate(num_units):
     df_lsoas = generate_mock_pwcs(num_lsoas=10, width=15)
