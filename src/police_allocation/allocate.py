@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
-import argparse
 
 from src.preprocessing.generate_mock_pwcs import generate_mock_pwcs
-from src.preprocessing.compute_reach_matrices import compute_reach_matrices
+from src.preprocessing.reach_matrices import compute_reach_matrices
 from src.police_allocation.choose_next_site import choose_next_site, calculate_twec
 
 def allocate(num_units, gdf):

@@ -3,8 +3,9 @@ import geopandas as gpd
 import pandas as pd
 from pathlib import Path
 import leafmap.foliumap as leafmap
-from src.config import DATA_DIR
 
+from src.config import DATA_DIR
+from src.preprocessing.aggregate_gdf import aggregate_gdf
 
 st.set_page_config(layout="wide")
 # st.title("Overview")
@@ -22,22 +23,37 @@ with first_cont:
 
     with controls_col:
         st.subheader("Controls")
-        regions = pd.read_csv(DATA_DIR / "region_names.csv")
-        selected_regions = st.multiselect("Regions", regions)
 
-        st.segmented_control("Map type", ["None","Hotspots", "Tiers", "Some map"], width="stretch", default="None")
-        prediction_span = st.slider("Months ahead", 0, 12, 1)
-        number = st.number_input("Police units")
+        with st.form("Map Controls"):
+            regions = pd.read_csv(DATA_DIR / "region_names.csv")
+            selected_regions = st.multiselect("Regions", regions)
+
+            st.segmented_control("Map type", ["None","Hotspots", "Tiers", "Some map"], width="stretch", default="None")
+            prediction_span = st.slider("Months ahead", 0, 12, 1)
+            number = st.number_input("Police units")
+
+            submitted = st.form_submit_button("Apply", type="primary")
+
         
-
+    selected_gdf_bounds = []
+    selected_gdf_cents = []
     for region in selected_regions:
         gdf_bounds = get_spatial_data(DATA_DIR / f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries")
-        gdf_cents = get_spatial_data(DATA_DIR / f"{region.replace(' ', '_')}.gpkg", "population_centroids")
-        poly_style = {'color': 'black', 'fillColor': 'blue', 'fillOpacity': 0.3, "weight": 1}
-        m.add_gdf(gdf=gdf_bounds, layer_name=f"Bounds {region}", style=poly_style)
-        m.add_gdf(gdf=gdf_cents, layer_name=f"Cetnts {region}")
+        selected_gdf_bounds.append(gdf_bounds)
 
-        print(gdf_cents)
+        gdf_cents = get_spatial_data(DATA_DIR / f"{region.replace(' ', '_')}.gpkg", "population_centroids")
+        selected_gdf_cents.append(gdf_cents)
+
+        # poly_style = {'color': 'black', 'fillColor': 'blue', 'fillOpacity': 0.3, "weight": 1}
+        # m.add_gdf(gdf=gdf_bounds, layer_name=f"Bounds {region}", style=poly_style)
+        # m.add_gdf(gdf=gdf_cents, layer_name=f"Cetnts {region}")
+    
+    if selected_regions:
+        gdf_combined_bounds = aggregate_gdf(selected_gdf_bounds)
+        gdf_combined_cents = aggregate_gdf(selected_gdf_cents)
+        m.add_data(gdf_combined_bounds, column="BNG_N", cmap='viridis', layer_name=f"Bounds", legend_title="Scale", k=8)
+
+        # print(gdf_cents)
 
     with map_col:
         st.subheader("MSOA 2021 Map", text_alignment='right')
