@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from scipy.spatial import distance_matrix
+
 from src.data.synthetic import generate_mock_pwcs
+from src.config import DATA_DIR
 
 def compute_reach_matrices(gdf, r1_min=5, r2_min=10):
 
@@ -31,4 +34,4 @@ def compute_reach_matrices(gdf, r1_min=5, r2_min=10):
             if distance <= r1_window: rm_r1[i, j] = True
             elif distance <= r2_window: rm_r2[i, j] = True
     
-    return rm_r1, rm_r2, dist_matrix_km
+    return rm_r1, rm_r2

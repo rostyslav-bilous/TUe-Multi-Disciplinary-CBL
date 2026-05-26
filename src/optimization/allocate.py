@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import argparse
+from pathlib import Path
 
 from src.data.synthetic import generate_mock_pwcs
 from src.optimization.network import compute_reach_matrices
@@ -9,7 +10,7 @@ from src.data.loaders import load_gpkg
 from src.config import DATA_DIR
 
 def allocate(num_units, gdf):
-    rm_r1, rm_r2, dist_matrix_km = compute_reach_matrices(gdf)
+    rm_r1, rm_r2 = compute_reach_matrices(gdf)
 
     print(f"Allocating {num_units} units...")
     num_lsoas = len(gdf)
@@ -28,7 +29,7 @@ def allocate(num_units, gdf):
 
     theoretical_max_twec = np.sum(gdf['weight'].values)
     efficiency = twec / theoretical_max_twec
-    return allocation, chosen_sites, dist_matrix_km, twec, theoretical_max_twec, efficiency
+    return allocation, chosen_sites, twec, theoretical_max_twec, efficiency
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     num_units = args.police_units or 10
     num_units = int(num_units)
     
-    allocation, chosen_sites, dist_matrix_km, twec, theoretical_max_twec, efficiency = allocate(num_units, gdf)
+    allocation, chosen_sites, twec, theoretical_max_twec, efficiency = allocate(num_units, gdf)
 
     print("--------------Test Inputs---------------")
     if not args.file:
