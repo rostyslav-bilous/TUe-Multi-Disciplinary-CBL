@@ -6,6 +6,7 @@ import leafmap.foliumap as leafmap
 
 from src.config import DATA_DIR
 from src.preprocessing.aggregate_gdf import aggregate_gdf
+from src.preprocessing.gdf_from_gpkg import get_spatial_data
 
 st.set_page_config(layout="wide")
 # st.title("Overview")
@@ -13,9 +14,9 @@ st.set_page_config(layout="wide")
 m = leafmap.Map(center=[52.5, -2.0  ], zoom=6.5)
 m.add_basemap('CartoDB.Positron')
 
-def get_spatial_data(file_path, layer_name):
-    gdf = gpd.read_file(file_path, layer=layer_name, engine="pyogrio")
-    return gdf.to_crs("EPSG:4326") # return in angle coordinates for leafmap rendering
+# def get_spatial_data(file_path, layer_name):
+#     gdf = gpd.read_file(file_path, layer=layer_name, engine="pyogrio")
+#     return gdf.to_crs("EPSG:4326") # return in angle coordinates for leafmap rendering
 
 first_cont = st.container()
 with first_cont:
@@ -25,7 +26,7 @@ with first_cont:
         st.subheader("Controls")
 
         with st.form("Map Controls"):
-            regions = pd.read_csv(DATA_DIR / "region_names.csv")
+            regions = pd.read_csv(DATA_DIR / "uk_split" / "region_names.csv")
             selected_regions = st.multiselect("Regions", regions)
 
             st.segmented_control("Map type", ["None","Hotspots", "Tiers", "Some map"], width="stretch", default="None")
@@ -38,10 +39,10 @@ with first_cont:
     selected_gdf_bounds = []
     selected_gdf_cents = []
     for region in selected_regions:
-        gdf_bounds = get_spatial_data(DATA_DIR / f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries")
+        gdf_bounds = get_spatial_data(DATA_DIR / "uk_split"/ f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries").to_crs("EPSG:4326")
         selected_gdf_bounds.append(gdf_bounds)
 
-        gdf_cents = get_spatial_data(DATA_DIR / f"{region.replace(' ', '_')}.gpkg", "population_centroids")
+        gdf_cents = get_spatial_data(DATA_DIR / "uk_split" / f"{region.replace(' ', '_')}.gpkg", "population_centroids").to_crs("EPSG:4326")
         selected_gdf_cents.append(gdf_cents)
 
         # poly_style = {'color': 'black', 'fillColor': 'blue', 'fillOpacity': 0.3, "weight": 1}

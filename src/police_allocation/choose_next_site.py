@@ -10,7 +10,7 @@ def choose_next_site(gdf, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     '''
 
     nr_msoas = len(gdf)
-    weights = gdf['crime_weight'].values
+    weights = gdf['weight'].values
 
     max_delta_twec = -1
     best_candidate = None
@@ -42,7 +42,7 @@ def choose_next_site(gdf, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     allocation['m'] += affected_r2
     twec = calculate_twec(allocation, weights, p, q)
 
-    return allocation, gdf.loc[best_candidate, 'lsoa_id'], twec
+    return allocation, gdf.loc[best_candidate, 'MSOA21CD'], twec
 
 
 def calculate_twec(allocation, weights, p, q):

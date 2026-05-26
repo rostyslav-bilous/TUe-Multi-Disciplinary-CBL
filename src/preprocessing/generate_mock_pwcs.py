@@ -19,7 +19,7 @@ def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
     congestion_scalers = np.full(num_lsoas, 1)
     geometry = gpd.points_from_xy(pwc_x, pwc_y)
     gdf = gpd.GeoDataFrame({
-        'lsoa_id': lsoa_ids,
+        'MSOA21CD': lsoa_ids,
         'X': pwc_x,
         'Y': pwc_y,
         'crime_weight': weights,
@@ -29,7 +29,7 @@ def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
         geometry=geometry,
         crs="EPSG:27700" # meters
         )
-    return gdf
+    return gdf.to_crs("EPSG:4326")
 
 if __name__ == "__main__":
     mock_data = generate_mock_pwcs(num_lsoas=30)
