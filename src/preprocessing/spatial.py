@@ -2,6 +2,7 @@ import geopandas as gpd
 import pandas as pd
 from src.config import RAW_DIR
 from src.config import DATA_DIR
+from src.data.loaders import load_gpkg
 
 def aggregate_gdf(gdfs):
     if not gdfs:
@@ -15,8 +16,8 @@ def aggregate_gdf(gdfs):
     return gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True), crs=target_crs)
 
 
-def split_uk_geometries_by_region():
-    boundaries = gpd.read_file(RAW_DIR / "boundaries" / "msoa_2021_Boundaries_BSC.gpkg", engine="pyogrio")
+def split_uk_spatial_by_region():
+    boundaries = load_gpkg(RAW_DIR / "boundaries" / "msoa_2021_Boundaries_BSC.gpkg")
     centroids = pd.read_csv(RAW_DIR / "centroids" / "msoa_2021_PWCs.csv")
     lookup = pd.read_csv(RAW_DIR / "lookup" / "msoa_region_lookup_2022.csv")
 
@@ -49,6 +50,22 @@ def split_uk_geometries_by_region():
         gdf_region_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
 
     pd.Series(regions).to_csv(DATA_DIR / "regions" /"region_names.csv", index=False)
+
+
+def consolidate_uk_spatial():
+    gdf_bounds = load_gpkg(RAW_DIR / "boundaries" / "msoa_2021_Boundaries_BSC.gpkg")
+    cents = pd.read_csv(RAW_DIR / "centroids" / "msoa_2021_PWCs.csv")
+    gdf_cents = gpd.GeoDataFrame(
+            cents,
+            geometry=gpd.points_from_xy(cents['X'], cents['Y']),
+            crs="EPSG:27700" # meter coordinates are used by default
+        )
+    gdf_cents.to_crs("EPSG:4326")
+    save_path = DATA_DIR / "regions" / "UK.gpkg"
+    gdf_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
+    gdf_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
+    print(save_path)
     
 if __name__ == "__main__":
-    split_uk_geometries_by_region()
+    split_uk_spatial_by_region()
+    consolidate_uk_spatial()

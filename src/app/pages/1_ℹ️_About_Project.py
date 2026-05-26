@@ -6,7 +6,7 @@ import leafmap.foliumap as leafmap
 
 from src.config import DATA_DIR
 from src.preprocessing.spatial import aggregate_gdf
-from src.data.loaders import get_spatial_data
+from src.data.loaders import load_gpkg
 
 st.set_page_config(layout="wide")
 # st.title("Overview")
@@ -14,7 +14,7 @@ st.set_page_config(layout="wide")
 m = leafmap.Map(center=[52.5, -2.0  ], zoom=6.5)
 m.add_basemap('CartoDB.Positron')
 
-# def get_spatial_data(file_path, layer_name):
+# def load_gpkg(file_path, layer_name):
 #     gdf = gpd.read_file(file_path, layer=layer_name, engine="pyogrio")
 #     return gdf.to_crs("EPSG:4326") # return in angle coordinates for leafmap rendering
 
@@ -29,7 +29,7 @@ with first_cont:
             regions = pd.read_csv(DATA_DIR / "regions" / "region_names.csv")
             selected_regions = st.multiselect("Regions", regions)
 
-            st.segmented_control("Map type", ["None","Hotspots", "Tiers", "Some map"], width="stretch", default="None")
+            st.segmented_control("Map type", ["None","Hotspots", "Tiers", "Some map"], width=   "stretch", default="None")
             prediction_span = st.slider("Months ahead", 0, 12, 1)
             number = st.number_input("Police units")
 
@@ -39,10 +39,10 @@ with first_cont:
     selected_gdf_bounds = []
     selected_gdf_cents = []
     for region in selected_regions:
-        gdf_bounds = get_spatial_data(DATA_DIR / "regions"/ f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries").to_crs("EPSG:4326")
+        gdf_bounds = load_gpkg(DATA_DIR / "regions"/ f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries").to_crs("EPSG:4326")
         selected_gdf_bounds.append(gdf_bounds)
 
-        gdf_cents = get_spatial_data(DATA_DIR / "regions" / f"{region.replace(' ', '_')}.gpkg", "population_centroids").to_crs("EPSG:4326")
+        gdf_cents = load_gpkg(DATA_DIR / "regions" / f"{region.replace(' ', '_')}.gpkg", "population_centroids").to_crs("EPSG:4326")
         selected_gdf_cents.append(gdf_cents)
 
         # poly_style = {'color': 'black', 'fillColor': 'blue', 'fillOpacity': 0.3, "weight": 1}

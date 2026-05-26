@@ -5,6 +5,7 @@ from src.data.synthetic import generate_mock_pwcs
 
 def compute_reach_matrices(gdf, r1_min=5, r2_min=10):
 
+    print("Computing matrices...")
     dist_matrix_km = distance_matrix(gdf[['X', 'Y']], gdf[['X', 'Y']]) / 1000.0 # pairwise distances in km
     
     r1_min = 5 / 60 # 5 min in h

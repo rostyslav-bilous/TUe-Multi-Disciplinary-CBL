@@ -5,11 +5,13 @@ import argparse
 from src.data.synthetic import generate_mock_pwcs
 from src.optimization.network import compute_reach_matrices
 from src.optimization.site_selection import choose_next_site, calculate_twec
-from src.data.loaders import get_spatial_data
+from src.data.loaders import load_gpkg
+from src.config import DATA_DIR
 
 def allocate(num_units, gdf):
     rm_r1, rm_r2, dist_matrix_km = compute_reach_matrices(gdf)
 
+    print(f"Allocating {num_units} units...")
     num_lsoas = len(gdf)
     allocation = {
         "n": np.zeros(num_lsoas, dtype=int),
@@ -30,7 +32,8 @@ def allocate(num_units, gdf):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--file')
+    parser.add_argument('-f', '--file')
+    parser.add_argument('-p', '--police_units')
     args = parser.parse_args()
 
     if not args.file:
@@ -38,7 +41,7 @@ if __name__ == "__main__":
         width = 15
         gdf = generate_mock_pwcs(num_lsoas=num_lsoas, width=width)
     else:
-        gdf = get_spatial_data(f"{args.file}", layer_name="population_centroids")
+        gdf = load_gpkg(DATA_DIR / f"{args.file}.gpkg", "population_centroids")
 
     num_points = len(gdf)
     # WEIGHTS - to be replaced
@@ -54,7 +57,9 @@ if __name__ == "__main__":
     gdf['weight'] = weights
     gdf['speed_limit_kph'] = speed_limits
     gdf['congestion_scaler'] = congestion_scalers
-    num_units = 100
+
+    num_units = args.police_units or 10
+    num_units = int(num_units)
     
     allocation, chosen_sites, dist_matrix_km, twec, theoretical_max_twec, efficiency = allocate(num_units, gdf)
 
