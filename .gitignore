@@ -50,3 +50,5 @@ Thumbs.db
 *.h5
 *.pth
 *.onnx
+
+data/processed/

@@ -1,0 +1,6 @@
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC_DIR = ROOT / "src"
+DATA_DIR = ROOT / "data" / "processed"
+RAW_DIR = ROOT / "data" / "raw"

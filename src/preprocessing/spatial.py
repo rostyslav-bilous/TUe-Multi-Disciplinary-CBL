@@ -1,0 +1,71 @@
+import geopandas as gpd
+import pandas as pd
+from src.config import RAW_DIR
+from src.config import DATA_DIR
+from src.data.loaders import load_gpkg
+
+def aggregate_gdf(gdfs):
+    if not gdfs:
+        return None
+    target_crs = gdfs[0].crs
+    
+    for i, gdf in enumerate(gdfs):
+        if gdf.crs != target_crs:
+            raise ValueError(f"CRS mismatch at {i}: {gdf.crs} instead of {target_crs}.")
+    
+    return gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True), crs=target_crs)
+
+
+def split_uk_spatial_by_region():
+    boundaries = load_gpkg(RAW_DIR / "boundaries" / "msoa_2021_Boundaries_BSC.gpkg")
+    centroids = pd.read_csv(RAW_DIR / "centroids" / "msoa_2021_PWCs.csv")
+    lookup = pd.read_csv(RAW_DIR / "lookup" / "msoa_region_lookup_2022.csv")
+
+    regions = lookup['RGN22NM'].unique()
+    
+    for region in regions:
+        # filter MSOAs to match the region
+        region_msoa_codes = lookup[lookup['RGN22NM'] == region]['MSOA21CD'].unique()
+
+        # filter boundaries to match filtered MSOAs
+        gdf_region_bounds = boundaries[boundaries['MSOA21CD'].isin(region_msoa_codes)].copy()
+        gdf_region_bounds = gdf_region_bounds.to_crs("EPSG:4326") # convert to angle coordinates
+        gdf_region_bounds = gdf_region_bounds.reset_index(drop=True)
+
+        # filter centroids to match filtered MSOAs
+        region_cents = centroids[centroids['MSOA21CD'].isin(region_msoa_codes)].copy()
+        gdf_region_cents = gpd.GeoDataFrame(
+            region_cents,
+            geometry=gpd.points_from_xy(region_cents['X'], region_cents['Y']),
+            crs="EPSG:27700" # meter coordinates are used by default
+        )
+        gdf_region_cents.to_crs("EPSG:4326")
+        gdf_region_cents = gdf_region_cents.reset_index(drop=True)
+
+        # save GeoPackage file
+        region_name = region.replace(' ', '_')
+        save_path = DATA_DIR / "regions" / f"{region_name}.gpkg"
+        print(save_path)
+        gdf_region_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
+        gdf_region_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
+
+    pd.Series(regions).to_csv(DATA_DIR / "regions" /"region_names.csv", index=False)
+
+
+def consolidate_uk_spatial():
+    gdf_bounds = load_gpkg(RAW_DIR / "boundaries" / "msoa_2021_Boundaries_BSC.gpkg")
+    cents = pd.read_csv(RAW_DIR / "centroids" / "msoa_2021_PWCs.csv")
+    gdf_cents = gpd.GeoDataFrame(
+            cents,
+            geometry=gpd.points_from_xy(cents['X'], cents['Y']),
+            crs="EPSG:27700" # meter coordinates are used by default
+        )
+    gdf_cents.to_crs("EPSG:4326")
+    save_path = DATA_DIR / "regions" / "UK.gpkg"
+    gdf_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
+    gdf_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
+    print(save_path)
+    
+if __name__ == "__main__":
+    split_uk_spatial_by_region()
+    consolidate_uk_spatial()
