@@ -5,8 +5,8 @@ from pathlib import Path
 import leafmap.foliumap as leafmap
 
 from src.config import DATA_DIR
-from src.preprocessing.aggregate_gdf import aggregate_gdf
-from src.preprocessing.gdf_from_gpkg import get_spatial_data
+from src.preprocessing.spatial import aggregate_gdf
+from src.data.loaders import get_spatial_data
 
 st.set_page_config(layout="wide")
 # st.title("Overview")
@@ -26,7 +26,7 @@ with first_cont:
         st.subheader("Controls")
 
         with st.form("Map Controls"):
-            regions = pd.read_csv(DATA_DIR / "uk_split" / "region_names.csv")
+            regions = pd.read_csv(DATA_DIR / "regions" / "region_names.csv")
             selected_regions = st.multiselect("Regions", regions)
 
             st.segmented_control("Map type", ["None","Hotspots", "Tiers", "Some map"], width="stretch", default="None")
@@ -39,10 +39,10 @@ with first_cont:
     selected_gdf_bounds = []
     selected_gdf_cents = []
     for region in selected_regions:
-        gdf_bounds = get_spatial_data(DATA_DIR / "uk_split"/ f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries").to_crs("EPSG:4326")
+        gdf_bounds = get_spatial_data(DATA_DIR / "regions"/ f"{region.replace(' ', '_')}.gpkg", "msoa_boundaries").to_crs("EPSG:4326")
         selected_gdf_bounds.append(gdf_bounds)
 
-        gdf_cents = get_spatial_data(DATA_DIR / "uk_split" / f"{region.replace(' ', '_')}.gpkg", "population_centroids").to_crs("EPSG:4326")
+        gdf_cents = get_spatial_data(DATA_DIR / "regions" / f"{region.replace(' ', '_')}.gpkg", "population_centroids").to_crs("EPSG:4326")
         selected_gdf_cents.append(gdf_cents)
 
         # poly_style = {'color': 'black', 'fillColor': 'blue', 'fillOpacity': 0.3, "weight": 1}

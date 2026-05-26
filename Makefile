@@ -7,7 +7,7 @@ setup:
 	@echo "Setup complete."
 
 preprocess:
-	.venv/bin/python3 -m src.preprocessing.split_uk_geometries_by_region
+	.venv/bin/python3 -m src.preprocessing.spatial
 	@echo "Preprocessing complete."
 
 app:
