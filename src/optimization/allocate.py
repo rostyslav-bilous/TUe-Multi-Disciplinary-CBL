@@ -5,11 +5,11 @@ from pathlib import Path
 
 from src.data.synthetic import generate_mock_pwcs
 from src.optimization.network import compute_reach_matrices
-from src.optimization.site_selection import choose_next_site, calculate_twec
+from src.optimization.site_selection import choose_next_site, repick_site,calculate_twec
 from src.data.loaders import load_gpkg
 from src.config import DATA_DIR
 
-def allocate(num_units, gdf):
+def allocate(num_units, gdf, substitution):
     rm_r1, rm_r2 = compute_reach_matrices(gdf)
 
     print(f"Allocating {num_units} units...")
@@ -19,7 +19,7 @@ def allocate(num_units, gdf):
         "m": np.zeros(num_lsoas, dtype=int)
     }
 
-    chosen_sites = []
+    chosen_sites = [] # indices, not codes
     twec = 0.0
     p = 0.1
     q = 0.4
@@ -27,14 +27,23 @@ def allocate(num_units, gdf):
         allocation, winner_site, twec = choose_next_site(gdf, rm_r1, rm_r2, allocation, p, q)
         chosen_sites.append(winner_site)
 
+        if substitution:
+            # find a better site because some allocations might be no longer justified
+            allocation, winner_site, loser_list_idx, twec = repick_site(gdf, rm_r1, rm_r2, allocation, chosen_sites, p, q)
+            chosen_sites[loser_list_idx] = winner_site
+
     theoretical_max_twec = np.sum(gdf['weight'].values)
     efficiency = twec / theoretical_max_twec
-    return allocation, chosen_sites, twec, theoretical_max_twec, efficiency
+    site_codes = gdf.iloc[chosen_sites]['MSOA21CD'].tolist()
+    return allocation, chosen_sites, site_codes, twec, theoretical_max_twec, efficiency
+    
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file')
     parser.add_argument('-p', '--police_units')
+    parser.add_argument('-s','--substitution', action='store_true')
     args = parser.parse_args()
 
     if not args.file:
@@ -46,6 +55,7 @@ if __name__ == "__main__":
 
     num_points = len(gdf)
     # WEIGHTS - to be replaced
+    # np.random.seed(123)
     weights = np.random.choice(
         [0.1, 0.2, 0.7], 
         size=num_points, 
@@ -62,7 +72,7 @@ if __name__ == "__main__":
     num_units = args.police_units or 10
     num_units = int(num_units)
     
-    allocation, chosen_sites, twec, theoretical_max_twec, efficiency = allocate(num_units, gdf)
+    allocation, chosen_sites, site_codes, twec, theoretical_max_twec, efficiency = allocate(num_units, gdf, args.substitution)
 
     print("--------------Test Inputs---------------")
     if not args.file:
@@ -71,7 +81,8 @@ if __name__ == "__main__":
     print(f"Number of Police units: {num_units}")
     print("----------------Results-----------------")
     # print(f'Coverage: {allocation}')
-    print(f'Police Sites: {chosen_sites}')
+    print(f'Police Sites (index): {chosen_sites}')
+    print(f'Police Sites (code): {site_codes}')
     print(f'Current Network TWEC: {twec:.2f}')
     print(f'Theoretical Max TWEC: {theoretical_max_twec:.2f}')
     print(f'Efficiency: {efficiency:.1%}')
