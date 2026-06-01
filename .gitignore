@@ -51,4 +51,7 @@ Thumbs.db
 *.pth
 *.onnx
 
+# Jupyter
+.ipynb_checkpoints/
+
 data/processed/
