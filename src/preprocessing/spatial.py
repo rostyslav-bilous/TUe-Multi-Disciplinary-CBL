@@ -2,7 +2,7 @@ import geopandas as gpd
 import pandas as pd
 from src.config import RAW_DIR
 from src.config import DATA_DIR
-from src.data.loaders import load_gpkg
+from src.data.loaders import load_gpkg, load_excel
 
 def aggregate_gdf(gdfs):
     if not gdfs:
@@ -65,7 +65,53 @@ def consolidate_uk_spatial():
     gdf_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
     gdf_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
     print(save_path)
-    
+
+def speeds_and_delays():
+    # read tables
+    df_speeds = load_excel(RAW_DIR / "road" / "avg_speed_cgn0503.ods", "CGN0503d", "odf", 3)
+    df_speeds_latest = df_speeds[["Country/Region/Local Authority", "ONS area code", "2025 [Note 10]"]].copy()
+
+    df_speeds_latest["2025 [Note 10]"] = pd.to_numeric(df_speeds_latest["2025 [Note 10]"], errors='coerce') # convert to float
+    df_speeds_latest["2025 [Note 10]"] = df_speeds_latest["2025 [Note 10]"].fillna(24.0) # fill missing values
+    df_speeds_latest['avg_speed_kph'] = df_speeds_latest["2025 [Note 10]"] * 1.6 
+
+    # resolve codes mismatch
+    ons_code_remapping = {
+        "E10000023": "E06000065", # Map old North Yorkshire County to new Unitary Authority
+        "E10000027": "E06000066", # Map old Somerset County to new Unitary Authority
+        "E08000019": "E08000039", # Map Sheffield 
+        "E08000016": "E08000038", # Map Barnsley 
+    }
+    df_speeds_latest['ONS area code'] = df_speeds_latest['ONS area code'].replace(ons_code_remapping)
+
+    # map metrics to msoas
+    lookup = pd.read_csv(RAW_DIR / "lookup" / "msoa_counties_and_unitary_authority_lookup_(april_2025).csv")
+    df_speeds_latest = df_speeds_latest.rename(columns={"ONS area code": "CTYUA25CD"})
+    df_speeds_mapped = pd.merge(
+        lookup[["MSOA21CD", "CTYUA25CD"]],
+        df_speeds_latest[["CTYUA25CD", "avg_speed_kph"]],
+        on="CTYUA25CD",
+        how="left"
+    )
+    print(f'NaN speed values: {df_speeds_mapped['avg_speed_kph'].isna().sum()}')
+    gdf_uk_bounds = load_gpkg(DATA_DIR / "regions" / f"UK.gpkg", "msoa_boundaries")
+    gdf_uk_speeds = gdf_uk_bounds.merge(
+        df_speeds_mapped[['MSOA21CD', 'avg_speed_kph']],
+        on='MSOA21CD',
+        how='left'
+    )
+    print(gdf_uk_speeds.head())
+    gdf_uk_speeds.to_file(DATA_DIR / "allocation" / f"UK_speeds.gpkg", driver="GPKG", layer="msoa_speeds")
+
+    # 1. See what code your lookup table has given to the City of Nottingham
+    print(lookup[lookup['CTYUA25NM'].str.contains("Barnsley", na=False)][['CTYUA25CD', 'CTYUA25NM']].drop_duplicates())
+    # 2. See what code the DfT spreadsheet uses for the City vs the County
+    print(df_speeds_latest[df_speeds_latest['Country/Region/Local Authority'].str.contains("Barnsley", na=False)])
+
+
+
+
 if __name__ == "__main__":
-    split_uk_spatial_by_region()
-    consolidate_uk_spatial()
+    # split_uk_spatial_by_region()
+    # consolidate_uk_spatial()
+    speeds_and_delays()

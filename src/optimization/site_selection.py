@@ -14,7 +14,7 @@ def choose_next_site(gdf, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     weights = gdf['weight'].values
 
     max_delta_twec = -1
-    best_candidate = None # index
+    best_candidate = None # index in reach matrices
     
     current_twec = calculate_twec(allocation, weights, p, q)
 
@@ -40,13 +40,29 @@ def choose_next_site(gdf, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
 
 
 
+'''
+repick_site aims to find one best replacement for the set of already chosen sites.
+
+Computes the current TWEC.
+For each site in chosen_sites, it:
+    removes that site,
+    searches all possible replacement sites via choose_next_site(...),
+    measures the net TWEC change relative to the original allocation.
+
+It keeps the best overall swap across all chosen sites.
+
+If the best option is to keep the removed site, that is allowed:
+    choose_next_site evaluates every site, including the removed one,
+    if the best replacement is the same site, the delta becomes 0,
+    max_delta_twec starts at -1, so a 0 delta will be accepted.
+'''
 def repick_site(gdf, rm_r1, rm_r2, allocation, chosen_sites, p=0.1, q=0.4):
     weights = gdf['weight'].values
     current_twec = calculate_twec(allocation, weights, p, q)
     max_delta_twec = -1
-    best_candidate = None
-    loser = None
-    loser_list_idx = -1
+    best_candidate = None # index in reach matrices
+    loser = None # index in reach matrices
+    loser_list_idx = -1 # list index (position) in chosen_sites
 
     for list_idx, site in enumerate(chosen_sites):
         # remove site's coverage

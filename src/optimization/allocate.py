@@ -19,7 +19,7 @@ def allocate(num_units, gdf, substitution):
         "m": np.zeros(num_lsoas, dtype=int)
     }
 
-    chosen_sites = [] # indices, not codes
+    chosen_sites = [] # indices in reach matrices, not MSOA codes
     twec = 0.0
     p = 0.1
     q = 0.4
@@ -30,11 +30,11 @@ def allocate(num_units, gdf, substitution):
         if substitution:
             # find a better site because some allocations might be no longer justified
             allocation, winner_site, loser_list_idx, twec = repick_site(gdf, rm_r1, rm_r2, allocation, chosen_sites, p, q)
-            chosen_sites[loser_list_idx] = winner_site
+            chosen_sites[loser_list_idx] = winner_site # winner_site is an index in reach matrices
 
     theoretical_max_twec = np.sum(gdf['weight'].values)
     efficiency = twec / theoretical_max_twec
-    site_codes = gdf.iloc[chosen_sites]['MSOA21CD'].tolist()
+    site_codes = gdf.iloc[chosen_sites]['MSOA21CD'].tolist() # convert the list of matrix indices into MSOA codes
     return allocation, chosen_sites, site_codes, twec, theoretical_max_twec, efficiency
     
 
