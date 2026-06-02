@@ -66,14 +66,14 @@ def consolidate_uk_spatial():
     gdf_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
     print(save_path)
 
-def speeds_and_delays():
+def map_speeds_uk():
     # read tables
     df_speeds = load_excel(RAW_DIR / "road" / "avg_speed_cgn0503.ods", "CGN0503d", "odf", 3)
     df_speeds_latest = df_speeds[["Country/Region/Local Authority", "ONS area code", "2025 [Note 10]"]].copy()
 
     df_speeds_latest["2025 [Note 10]"] = pd.to_numeric(df_speeds_latest["2025 [Note 10]"], errors='coerce') # convert to float
     df_speeds_latest["2025 [Note 10]"] = df_speeds_latest["2025 [Note 10]"].fillna(24.0) # fill missing values
-    df_speeds_latest['avg_speed_kph'] = df_speeds_latest["2025 [Note 10]"] * 1.6 
+    df_speeds_latest['avg_speed_kph'] = (df_speeds_latest["2025 [Note 10]"] * 1.6).round(1) 
 
     # resolve codes mismatch
     ons_code_remapping = {
@@ -93,25 +93,33 @@ def speeds_and_delays():
         on="CTYUA25CD",
         how="left"
     )
-    print(f'NaN speed values: {df_speeds_mapped['avg_speed_kph'].isna().sum()}')
-    gdf_uk_bounds = load_gpkg(DATA_DIR / "regions" / f"UK.gpkg", "msoa_boundaries")
-    gdf_uk_speeds = gdf_uk_bounds.merge(
-        df_speeds_mapped[['MSOA21CD', 'avg_speed_kph']],
-        on='MSOA21CD',
-        how='left'
-    )
-    print(gdf_uk_speeds.head())
-    gdf_uk_speeds.to_file(DATA_DIR / "allocation" / f"UK_speeds.gpkg", driver="GPKG", layer="msoa_speeds")
 
-    # 1. See what code your lookup table has given to the City of Nottingham
-    print(lookup[lookup['CTYUA25NM'].str.contains("Barnsley", na=False)][['CTYUA25CD', 'CTYUA25NM']].drop_duplicates())
-    # 2. See what code the DfT spreadsheet uses for the City vs the County
-    print(df_speeds_latest[df_speeds_latest['Country/Region/Local Authority'].str.contains("Barnsley", na=False)])
+    save_path = DATA_DIR / 'allocation' / 'UK_speeds.csv'
+    df_speeds_mapped.to_csv(save_path, index=False)
+    print(save_path)
+
+    
+    # ---> uncomment for saving a GeoPackage for visual exploration
+    # gdf_uk_bounds = load_gpkg(DATA_DIR / "regions" / f"UK.gpkg", "msoa_boundaries")
+    # gdf_uk_speeds = gdf_uk_bounds.merge(
+    #     df_speeds_mapped[['MSOA21CD', 'avg_speed_kph']],
+    #     on='MSOA21CD',
+    #     how='left'
+    # )
+    # save_path = DATA_DIR / "allocation" / f"UK_speeds.gpkg"
+    # gdf_uk_speeds.to_file(save_path, driver="GPKG", layer="msoa_speeds")
+    
+def compute_radii_uk():
+    pass
+    
+
+
 
 
 
 
 if __name__ == "__main__":
-    # split_uk_spatial_by_region()
-    # consolidate_uk_spatial()
-    speeds_and_delays()
+    split_uk_spatial_by_region()
+    consolidate_uk_spatial()
+    map_speeds_uk()
+    compute_radii_uk()
