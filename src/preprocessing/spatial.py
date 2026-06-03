@@ -108,10 +108,7 @@ def map_speeds_uk():
     # )
     # save_path = DATA_DIR / "allocation" / f"UK_speeds.gpkg"
     # gdf_uk_speeds.to_file(save_path, driver="GPKG", layer="msoa_speeds")
-    
-def compute_radii_uk():
-    pass
-    
+
 
 
 
@@ -122,4 +119,3 @@ if __name__ == "__main__":
     split_uk_spatial_by_region()
     consolidate_uk_spatial()
     map_speeds_uk()
-    compute_radii_uk()
