@@ -35,3 +35,4 @@ def compute_reach_matrices(gdf, r1_min=5, r2_min=10):
             elif distance <= r2_window: rm_r2[i, j] = True
     
     return rm_r1, rm_r2
+    

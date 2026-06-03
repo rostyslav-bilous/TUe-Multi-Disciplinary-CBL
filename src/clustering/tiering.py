@@ -24,7 +24,7 @@ def assign_tiers(
     min_cluster_size: int = 5,
     min_samples: int = 3,
     intensity_cap_quantile: float | None = 0.95,
-    high_confidence_prob: float = 0.7,
+    high_confidence_prob: float = 0.9,
     tier_multipliers: dict[str, float] | None = None,
 ) -> pd.DataFrame:
     """Cluster MSOAs with HDBSCAN on (easting, northing, intensity) and assign tiers.
