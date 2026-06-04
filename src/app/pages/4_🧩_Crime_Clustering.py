@@ -38,7 +38,7 @@ with first_cont:
     parent_folder = folders[index]
     month_csv_path = parent_folder / selected_csv
     df_tiers = pd.read_csv(month_csv_path).rename(columns={'msoa_code': 'MSOA21CD'})
-    gdf_msoas = gdf_msoas.merge(df_tiers[['MSOA21CD', 'tier', 'final_weight']], how='left', on='MSOA21CD')
+    gdf_msoas = gdf_msoas.merge(df_tiers[['MSOA21CD', 'tier_adjusted', 'final_weight']], how='left', on='MSOA21CD')
 
     with map_col:
         color_dict = {
@@ -48,7 +48,7 @@ with first_cont:
         }
 
         def style_function(feature):
-            tier = feature["properties"]["tier"]
+            tier = feature["properties"]["tier_adjusted"]
 
             return {
                 "fillColor": color_dict.get(tier, "#cccccc"),
