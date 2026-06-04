@@ -30,7 +30,7 @@ with first_cont:
     with controls_col:
         st.subheader("Clusters/Tiers Prediction")
         with st.form("Map Controls"):
-            selected_csv = st.selectbox("Select file", file_names)
+            selected_csv = st.selectbox("Select file", file_names, index=0)
             submitted = st.form_submit_button("Apply", type="primary")
 
     # load correct file
