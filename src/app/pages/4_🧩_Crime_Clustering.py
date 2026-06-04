@@ -19,7 +19,7 @@ with first_cont:
 gdf_msoas = load_gpkg(DATA_DIR / 'regions' / 'UK.gpkg').to_crs("EPSG:4326")
 # df_tiers = pd.read_csv(DATA_DIR / 'tier_assignments_2026-04-01.csv').rename(columns={'msoa_code': 'MSOA21CD'}) 
 # gdf_msoas = gdf_msoas.merge(df_tiers[['MSOA21CD', 'tier', 'final_weight']], how='left', on='MSOA21CD')
-folder = DATA_DIR / 'yearly_tiers'
+folder = DATA_DIR / 'monthly_tiers'
 csv_paths = sorted(folder.glob('*.csv'))
 folders = [f.parent for f in csv_paths]
 file_names = [f.name for f in csv_paths]
