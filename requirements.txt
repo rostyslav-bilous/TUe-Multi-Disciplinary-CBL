@@ -53,9 +53,9 @@ Jinja2==3.1.6
 joblib==1.5.3
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
-jupyter-leaflet==0.20.0
 jupyter_client==8.8.0
 jupyter_core==5.9.1
+jupyter-leaflet==0.20.0
 jupyterlab_widgets==3.0.16
 kiwisolver==1.5.0
 leafmap==0.62.0
@@ -77,9 +77,10 @@ parso==0.8.7
 patsy==1.0.2
 pexpect==4.9.0
 pillow==12.2.0
+pip==24.0
 platformdirs==4.10.0
 plotly==6.7.0
--e git+ssh://git@github.com/rostyslav-bilous/TUe-Multi-Disciplinary-CBL.git@61492037e853e12139658aa35ebb89ea10cda812#egg=police_reorganization
+police_reorganization==0.1.0
 prompt_toolkit==3.0.52
 protobuf==7.35.0
 psutil==7.2.2
@@ -125,8 +126,8 @@ tornado==6.5.6
 tqdm==4.67.3
 traitlets==5.15.0
 traittypes==0.2.3
-typing-inspection==0.4.2
 typing_extensions==4.15.0
+typing-inspection==0.4.2
 urllib3==2.7.0
 uvicorn==0.47.0
 watchdog==6.0.0
