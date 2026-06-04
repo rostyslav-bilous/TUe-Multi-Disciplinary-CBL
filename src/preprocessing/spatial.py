@@ -45,6 +45,7 @@ def split_uk_spatial_by_region():
         # save GeoPackage file
         region_name = region.replace(' ', '_')
         save_path = DATA_DIR / "regions" / f"{region_name}.gpkg"
+        save_path.parent.mkdir(parents=True, exist_ok=True)
         print(save_path)
         gdf_region_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
         gdf_region_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
@@ -62,6 +63,7 @@ def consolidate_uk_spatial():
         )
     gdf_cents.to_crs("EPSG:4326")
     save_path = DATA_DIR / "regions" / "UK.gpkg"
+    save_path.parent.mkdir(parents=True, exist_ok=True)
     gdf_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
     gdf_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
     print(save_path)
@@ -95,6 +97,7 @@ def map_speeds_uk():
     )
 
     save_path = DATA_DIR / 'allocation' / 'UK_speeds.csv'
+    save_path.parent.mkdir(parents=True, exist_ok=True)
     df_speeds_mapped.to_csv(save_path, index=False)
     print(save_path)
 
