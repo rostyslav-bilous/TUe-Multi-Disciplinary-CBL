@@ -24,7 +24,7 @@ def assign_tiers(
     min_cluster_size: int = 5,
     min_samples: int = 3,
     intensity_cap_quantile: float | None = 0.95,
-    high_confidence_prob: float = 0.9,
+    hotspot_cluster_quantile: float = 0.80,
     tier_multipliers: dict[str, float] | None = None,
 ) -> pd.DataFrame:
     """Cluster MSOAs with HDBSCAN on (easting, northing, intensity) and assign tiers.
@@ -34,9 +34,14 @@ def assign_tiers(
     forecasts : DataFrame with columns ['msoa_code', 'month', 'intensity'].
     pwc : DataFrame with columns ['msoa_code', 'easting', 'northing'].
     month : Month to slice from forecasts, e.g. '2026-04-01'.
-    threshold : Intensity cutoff. Noise points above this become Tier 2 (at-risk),
-        otherwise Tier 3. In-cluster points with membership_prob >= high_confidence_prob
-        become Tier 1, otherwise Tier 2.
+    threshold : Intensity cutoff that splits every non-hotspot MSOA (whether clustered or
+        noise) into Tier 2 (above) vs Tier 3 (below).
+    hotspot_cluster_quantile : A cluster is a "hotspot" if its MEAN intensity ranks at
+        or above this quantile of all cluster means. Members of hotspot clusters become
+        Tier 1; members of other clusters become Tier 2. This defines a hotspot by crime
+        level (high intensity AND spatial coherence), not by cluster-membership
+        confidence. Higher value => fewer, more selective Tier 1 areas. Default 0.80
+        (top ~20% of clusters by mean intensity).
     min_cluster_size : Smallest group HDBSCAN will call a cluster. Default 5
         preserves smaller-city hotspots that 10+ would
         merge into larger neighbours. 
@@ -80,13 +85,25 @@ def assign_tiers(
     merged["membership_prob"] = clusterer.probabilities_
 
     is_noise = merged["cluster_label"] == -1
-    high_conf = merged["membership_prob"] >= high_confidence_prob
     at_risk = merged["intensity"] > threshold
 
+    # A cluster is a "hotspot" if its MEAN intensity is high relative to other clusters.
+    # Tier 1 = members of hotspot clusters (high crime AND spatially coherent). This
+    # replaces the old membership_prob rule, which rewarded cluster cohesion rather than
+    # crime level and inflated Tier 1.
+    cluster_mean = merged.loc[~is_noise].groupby("cluster_label")["intensity"].mean()
+    hot_cutoff = cluster_mean.quantile(hotspot_cluster_quantile)
+    hotspot_clusters = cluster_mean[cluster_mean >= hot_cutoff].index
+    in_hotspot = merged["cluster_label"].isin(hotspot_clusters) & ~is_noise
+
+    # Tier 1 is the hotspot clusters; everyone else is split purely by intensity vs the
+    # threshold (above -> Tier 2, below -> Tier 3). Applying the threshold to clustered
+    # AND noise points alike keeps Tiers 2/3 intensity-driven and stops low-crime cluster
+    # members from defaulting into Tier 2.
     merged["tier"] = np.select(
-        [is_noise & at_risk, is_noise & ~at_risk, ~is_noise & high_conf],
-        ["Tier 2", "Tier 3", "Tier 1"],
-        default="Tier 2",
+        [in_hotspot, at_risk],
+        ["Tier 1", "Tier 2"],
+        default="Tier 3",
     )
     merged["final_weight"] = merged["intensity"] * merged["tier"].map(multipliers)
 

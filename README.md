@@ -1,5 +1,6 @@
 ﻿# TUe-Multi-Disciplinary-CBL
-## 🚀 Setup & Launch on Linux/macOS/WSL2:
+## 🚀 Setup & Launch
+###  On Linux/macOS/WSL2
 
 If you are running on **Ubuntu/Debian**, ensure your system has Python's virtual environment development binaries installed:
 ```
@@ -7,19 +8,35 @@ sudo apt update && sudo apt install python3-venv python3-pip -y
 ```
 Navigate to project's root folder in your terminal and run these three commands:
 ```
-make setup        # initialize venv and install src as a local package
-make preprocess   # preprocess data
-make app          # launch web app
+make setup                  # initialize venv, install dependencies, and install src as a local package
+source .venv/bin/activate   # activate virtual environment
+make preprocess             # preprocess data
+make app                    # (optional) launch web app 
 ```
 Open `http://localhost:8501`. 
+### On Windows
+In PowerShell run the following commands:
+```
+.\setup.ps1                             # initialize venv, install dependencies, and install src as a local package
+.\.venv\Scripts\Activate.ps1            # activate virtual environment
+python -m src.preprocessing.spatial     # preprocess data
+python -m streamlit run src/app/app.py  # (optional) launch web app
+```
+If your PowerShell script execution is blocked, allow `setup.ps1` to be executed with the following command:
+```
+PowerShell.exe -ExecutionPolicy Bypass -File .\setup.ps1
+```  
 
-_This does not include setup for the execution of cells within `.ipynb` files YET. This is because cells do not recognize virtual env by default. So make sure to have all packages needed for notebooks installed globally or use Anaconda or similar tools._
 ## 🛠️ Development Manual
 !!IMPORTANT: all source code files must be placed inside `src/`.
 
 When working with scripts inside `src/`, activate your virtual environment:
 ```
 source .venv/bin/activate
+```
+On Windows:
+```
+.\.venv\Scripts\Activate.ps1 
 ```
 You should see `(.venv)` appear before the prompt line. When exiting the workspace deactivate venv:
 ```
@@ -30,3 +47,4 @@ When running standalone scripts from your terminal, always stand at the project 
 ```
 python3 -m src.optimization.allocate -f regions/London -p 45
 ```
+On Windows replace `python3` by `python`.
