@@ -9,7 +9,7 @@ from src.optimization.site_selection import choose_next_site, repick_site,calcul
 from src.data.loaders import load_gpkg
 from src.config import DATA_DIR
 
-def allocate(num_units, gdf, substitution):
+def allocate(num_units, gdf, substitution, file_name):
     rm_r1, rm_r2 = compute_reach_matrices(gdf)
 
     print(f"Allocating {num_units} units...")
@@ -35,6 +35,15 @@ def allocate(num_units, gdf, substitution):
     theoretical_max_twec = np.sum(gdf['weight'].values)
     efficiency = twec / theoretical_max_twec
     site_codes = gdf.iloc[chosen_sites]['MSOA21CD'].tolist() # convert the list of matrix indices into MSOA codes
+
+    # save chosen site codes
+    if file_name:
+        save_path = DATA_DIR / "allocation" / f'{file_name}.txt'
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(save_path, 'w') as f:
+            for site in site_codes:
+                f.write(f'{site}\n')
+
     return allocation, chosen_sites, site_codes, twec, theoretical_max_twec, efficiency
     
 
@@ -44,6 +53,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--file')
     parser.add_argument('-p', '--police_units')
     parser.add_argument('-s','--substitution', action='store_true')
+    parser.add_argument('-o', '--output_name')
     args = parser.parse_args()
 
     if not args.file:
@@ -72,7 +82,7 @@ if __name__ == "__main__":
     num_units = args.police_units or 10
     num_units = int(num_units)
     
-    allocation, chosen_sites, site_codes, twec, theoretical_max_twec, efficiency = allocate(num_units, gdf, args.substitution)
+    allocation, chosen_sites, site_codes, twec, theoretical_max_twec, efficiency = allocate(num_units, gdf, args.substitution, args.output_name)
 
     print("--------------Test Inputs---------------")
     if not args.file:
