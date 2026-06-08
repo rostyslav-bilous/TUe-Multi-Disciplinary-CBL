@@ -3,19 +3,17 @@ import numpy as np
 from pathlib import Path
 from scipy.spatial import distance_matrix
 
-from src.data.synthetic import generate_mock_pwcs
-from src.config import DATA_DIR
 
 def compute_reach_matrices(gdf, r1_min=5, r2_min=10):
 
     print("Computing matrices...")
     dist_matrix_km = distance_matrix(gdf[['X', 'Y']], gdf[['X', 'Y']]) / 1000.0 # pairwise distances in km
     
-    r1_min = r1_min / 60 # 5 min in h
-    r2_min = r2_min / 60 # 10 min in h
+    r1_min = r1_min / 60 # min in h
+    r2_min = r2_min / 60 # min in h
 
-    gdf['r1_km'] = gdf['speed_limit_kph'] * gdf['congestion_scaler'] * r1_min
-    gdf['r2_km'] = gdf['speed_limit_kph'] * gdf['congestion_scaler'] * r2_min
+    gdf['r1_km'] = gdf['avg_speed_kph'] * r1_min
+    gdf['r2_km'] = gdf['avg_speed_kph'] * r2_min
 
     nr_points = len(gdf)
 

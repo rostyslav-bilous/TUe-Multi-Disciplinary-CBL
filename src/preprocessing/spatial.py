@@ -95,7 +95,7 @@ def map_speeds_uk():
         how="left"
     )
 
-    save_path = DATA_DIR / 'allocation' / 'UK_speeds.csv'
+    save_path = DATA_DIR / 'speeds' / 'UK_speeds.csv'
     save_path.parent.mkdir(parents=True, exist_ok=True)
     df_speeds_mapped.to_csv(save_path, index=False)
     print(save_path)

@@ -43,7 +43,7 @@ with first_cont:
     gdf_chosen_cents['X_4326'] = gdf_chosen_cents.geometry.x
     gdf_chosen_cents['Y_4326'] = gdf_chosen_cents.geometry.y
 
-    gdf_bounds = load_gpkg(DATA_DIR / 'regions' / 'UK.gpkg', 'msoa_boundaries')
+    gdf_bounds = load_gpkg(DATA_DIR / 'regions' / 'London.gpkg', 'msoa_boundaries')
 
     with map_col:
         m.add_gdf(gdf_bounds, 'MSOA bounds')
