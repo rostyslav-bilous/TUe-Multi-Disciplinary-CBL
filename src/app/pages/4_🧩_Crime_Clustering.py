@@ -33,6 +33,7 @@ with first_cont:
             selected_csv = st.selectbox("Select file", file_names, index=0)
             submitted = st.form_submit_button("Apply", type="primary")
 
+
     # load correct file
     index = file_names.index(selected_csv)
     parent_folder = folders[index]
