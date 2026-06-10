@@ -24,6 +24,13 @@ with first_cont:
         file_names_weights = [f.name for f in csv_paths_weights]
         with st.form("Weight Map Controls"):
             selected_weights_file = st.selectbox("Select weights file", file_names_weights, index=0)
+            window_col1, window_col2 = st.columns([1,1], vertical_alignment="top", gap='large')
+            with window_col1:
+                st.slider("Primary responce window", 0, 15, 1)
+            with window_col2:
+                st.slider("Secondary responce window", 0, 30, 1)
+            is_substitution = st.checkbox('Use substitution')
+            number = st.number_input("Insert a number")
             submitted_weights = st.form_submit_button("Apply", type="primary")
 
     with controls_col2:
@@ -75,7 +82,7 @@ with first_cont:
             "fillColor": linear_colormap(metric),
             "fillOpacity": 0.9,
             "color": "white",
-            "weight": 1
+            "weight": 1.0
         }
         return style
     
@@ -91,11 +98,21 @@ with second_cont:
         linear_colormap.caption = "Weight"
         m1.add_layer(linear_colormap)
         m1.to_streamlit()
-
+    
+    def msoa_bounds_style(feature):
+        style = {
+            "fillColor": 'white',
+            "fillOpacity": 0.0,
+            "color": "black",
+            'opacity': 0.5,
+            "weight": 0.2
+        }
+        return style
+    
     with map_col2:
         m2 = leafmap.Map(center=[52.5, -2.0  ], zoom=6.5)
         m2.add_basemap('CartoDB.Positron')
-        m2.add_gdf(gdf_bounds, 'MSOA bounds')
+        m2.add_gdf(gdf_bounds, layer_name='MSOA bounds', style_callback=msoa_bounds_style)
         for idx, row in gdf_chosen_cents.iterrows():
             lat = row.geometry.y + np.random.uniform(-0.001, 0.001) # jitter to visually distinguish units at one site
             lon = row.geometry.x + np.random.uniform(-0.001, 0.001)
