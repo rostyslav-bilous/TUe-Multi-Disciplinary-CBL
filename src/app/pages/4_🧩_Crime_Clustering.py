@@ -3,7 +3,7 @@ import leafmap.foliumap as leafmap
 import pandas as pd
 from pathlib import Path
 
-from src.config import DATA_DIR
+from src.config import DATA_DIR, RAW_DIR
 from src.data.loaders import load_gpkg
 
 
@@ -33,12 +33,16 @@ with first_cont:
             selected_csv = st.selectbox("Select file", file_names, index=0)
             submitted = st.form_submit_button("Apply", type="primary")
 
-    # load correct file
+
+    # load tiers file
     index = file_names.index(selected_csv)
     parent_folder = folders[index]
     month_csv_path = parent_folder / selected_csv
     df_tiers = pd.read_csv(month_csv_path).rename(columns={'msoa_code': 'MSOA21CD'})
     gdf_msoas = gdf_msoas.merge(df_tiers[['MSOA21CD', 'tier_adjusted', 'final_weight']], how='left', on='MSOA21CD')
+
+    # load police force bounds
+    gdf_pfa_bounds = load_gpkg(RAW_DIR / 'boundaries' / 'Police_Force_Areas_December_2023_EW_BSC.gpkg')
 
     with map_col:
         color_dict = {
@@ -47,7 +51,7 @@ with first_cont:
         "Tier 3": "#FFFFFF",  # Tier 3
         }
 
-        def style_function(feature):
+        def style_tiers(feature):
             tier = feature["properties"]["tier_adjusted"]
 
             return {
@@ -60,11 +64,23 @@ with first_cont:
         m.add_gdf(
             gdf_msoas,
             layer_name="MSOA tiers",
-            style_function=style_function
+            style_function=style_tiers
         )
 
-        # m.save(DATA_DIR / "msoa_tier_map.html")
-
+        def style_pfa(feature):
+            return {
+                "fillColor": 'white',
+                "color": "purple",   # border color
+                "weight": 0.7,      # border thickness
+                "fillOpacity": 0.0,
+            }
+        
+        m.add_gdf(
+            gdf_pfa_bounds,
+            layer_name="PFA bounds",
+            style_function=style_pfa
+        )
+        
         m.to_streamlit()
 
 

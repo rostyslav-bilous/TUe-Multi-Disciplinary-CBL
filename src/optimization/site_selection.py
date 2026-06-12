@@ -11,7 +11,7 @@ def choose_next_site(gdf, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     '''
 
     nr_msoas = len(gdf)
-    weights = gdf['weight'].values
+    weights = gdf['final_weight'].values
 
     max_delta_twec = -1
     best_candidate = None # index in reach matrices
@@ -57,7 +57,7 @@ If the best option is to keep the removed site, that is allowed:
     max_delta_twec starts at -1, so a 0 delta will be accepted.
 '''
 def repick_site(gdf, rm_r1, rm_r2, allocation, chosen_sites, p=0.1, q=0.4):
-    weights = gdf['weight'].values
+    weights = gdf['final_weight'].values
     current_twec = calculate_twec(allocation, weights, p, q)
     max_delta_twec = -1
     best_candidate = None # index in reach matrices

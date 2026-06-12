@@ -9,5 +9,5 @@ pages = [
    "pages/5_🎯_Resource_Allocation.py",
    "pages/6_📈_Model_Evaluation.py"
 ]
-pg = st.navigation(pages, position="sidebar")
+pg = st.navigation(pages, position="top")
 pg.run()

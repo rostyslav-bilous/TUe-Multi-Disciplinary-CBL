@@ -61,7 +61,6 @@ def consolidate_uk_spatial():
             geometry=gpd.points_from_xy(cents['X'], cents['Y']),
             crs="EPSG:27700" # meter coordinates are used by default
         )
-    gdf_cents.to_crs("EPSG:4326")
     save_path = DATA_DIR / "regions" / "UK.gpkg"
     save_path.parent.mkdir(parents=True, exist_ok=True)
     gdf_bounds.to_file(save_path, driver="GPKG", layer="msoa_boundaries")
@@ -96,7 +95,7 @@ def map_speeds_uk():
         how="left"
     )
 
-    save_path = DATA_DIR / 'allocation' / 'UK_speeds.csv'
+    save_path = DATA_DIR / 'speeds' / 'UK_speeds.csv'
     save_path.parent.mkdir(parents=True, exist_ok=True)
     df_speeds_mapped.to_csv(save_path, index=False)
     print(save_path)
