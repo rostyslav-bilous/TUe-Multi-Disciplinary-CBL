@@ -156,10 +156,10 @@ def color_weights(gdf_bounds, df_weights, m):
     m.add_gdf(gdf_weights, style_callback=smooth_style, layer_name="MSOA Weights")
 
     
-def validate_allocation_inputs(num_units, primary_window, backup_window, selected_weights_file, selected_pfa, prob_pr, prob_ba):
+def validate_allocation_inputs(num_units, window_pr, window_ba, selected_weights_file, selected_pfa, prob_pr, prob_ba):
     errors = []
 
-    if primary_window >= backup_window:
+    if window_pr >= window_ba:
         errors.append("Primary response window must be smaller than backup window.")
 
     if selected_weights_file is None or selected_weights_file == "":
@@ -279,16 +279,16 @@ with controls_container:
                 
             with form_col1:
                 num_units = int(st.text_input("Number of police units", value=10))
-                primary_window = st.slider("Primary response window (min)", 0, 15, 8)
-                backup_window = st.slider("Backup response window (min)", 0, 30, 16)
+                window_pr = st.slider("Primary response window (min)", 0, 15, 8)
+                window_ba = st.slider("Backup response window (min)", 0, 30, 16)
                 use_substitution = st.checkbox("Use substitution")
 
 
         if submitted_inputs:
             validation_errors = validate_allocation_inputs(
                 num_units,
-                primary_window,
-                backup_window,
+                window_pr,
+                window_ba,
                 selected_weights_file,
                 selected_pfa,
                 prob_pr,
@@ -306,7 +306,7 @@ with controls_container:
                 df_weights = pd.read_csv(DATA_DIR / 'monthly_tiers' / selected_weights_file).rename(columns={'msoa_code': 'MSOA21CD'})
 
                 # allocate
-                site_codes, twec, max_twec = allocate(num_units, gdf_selected_cents, use_substitution, df_weights, prob_pr, prob_ba, None)
+                site_codes, twec, max_twec = allocate(num_units, gdf_selected_cents, use_substitution, df_weights, prob_pr, prob_ba, window_pr, window_ba, None)
 
                 df_sites = pd.DataFrame({'MSOA21CD': site_codes})
                 gdf_chosen_sites = gdf_cents.merge(df_sites, on='MSOA21CD', how='right').to_crs('EPSG:4326') #sites chosen by the algorithm

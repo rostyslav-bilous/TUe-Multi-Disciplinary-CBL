@@ -9,7 +9,7 @@ from src.optimization.site_selection import choose_next_site, repick_site,calcul
 from src.data.loaders import load_gpkg
 from src.config import DATA_DIR
 
-def allocate(num_units, gdf_cents, substitution, df_tiers, prob_pr, prob_ba, output_file_name):
+def allocate(num_units, gdf_cents, substitution, df_tiers, prob_pr, prob_ba, window_pr, window_ba, output_file_name):
      # load speeds table
     df_speeds = pd.read_csv(DATA_DIR / 'speeds' / 'UK_speeds.csv')
     # join cents and speeds table
@@ -20,7 +20,7 @@ def allocate(num_units, gdf_cents, substitution, df_tiers, prob_pr, prob_ba, out
     gdf_cents = gdf_cents.merge(df_weights, on="MSOA21CD", how='left')
 
     # calculate reach matrices
-    rm_r1, rm_r2 = compute_reach_matrices(gdf_cents)
+    rm_r1, rm_r2 = compute_reach_matrices(gdf_cents, window_pr, window_ba)
 
     print(f"Allocating {num_units} units...")
     num_lsoas = len(gdf_cents)
