@@ -316,10 +316,10 @@ with controls_container:
                     selected_pfa,
                     gdf_chosen_sites
                 )
-                metric_col1, metric_col2, metric_col3 = st.columns([1,1,1], gap="small")
-                metric_col1.metric(label='TWEC', value=format_metric_value(twec))
-                metric_col2.metric(label='Max Theoretical TWEC', value=format_metric_value(max_twec))
-                metric_col3.metric(label="Coverage Efficiency", value=f"{(twec / max_twec):.2%}")
+                # metric_col1, metric_col2, metric_col3 = st.columns([1,1,1], gap="small")
+                # metric_col1.metric(label='TWEC', value=format_metric_value(twec))
+                # metric_col2.metric(label='Max Theoretical TWEC', value=format_metric_value(max_twec))
+                # metric_col3.metric(label="Coverage Efficiency", value=f"{(twec / max_twec):.2%}")
 
 
 
