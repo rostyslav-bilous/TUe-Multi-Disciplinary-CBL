@@ -1,6 +1,7 @@
 import geopandas as gpd
 import pandas as pd
 
+# data loaders
 def load_gpkg(file_path, layer_name=None):
     gdf = gpd.read_file(file_path, layer=layer_name, engine="pyogrio")
     return gdf

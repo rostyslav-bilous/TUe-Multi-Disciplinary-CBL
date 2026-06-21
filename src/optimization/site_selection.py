@@ -2,11 +2,12 @@ import numpy as np
 import pandas as pd
 import copy
 
+# chooses the next police site to maximize TWEC gain
 def choose_next_site(gdf, rm_r1, rm_r2, allocation, p=0.1, q=0.4):
     '''
     allocation = {
-        "n": np.array of r1 unit counts for LSAOs,
-        "m": np.array of r2 unit counts for LSAOs
+        "n": np.array of r1 unit counts for MSAOs,
+        "m": np.array of r2 unit counts for MSAOs
     }
     '''
 
@@ -114,6 +115,6 @@ def calculate_twec(allocation, weights, p, q):
     n = allocation['n']
     m = allocation['m']
 
-    wec = (1.0 - (p**n) * (q**m)) * weights # weighted expected coverage per LSOA (renamed C*Weight to WEC to be more precise)
+    wec = (1.0 - (p**n) * (q**m)) * weights # weighted expected coverage per MSOA (renamed C*Weight to WEC to be more precise)
     twec = np.sum(wec) # total weighted expected coverage
     return twec

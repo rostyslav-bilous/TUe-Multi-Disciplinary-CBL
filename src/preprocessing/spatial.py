@@ -4,6 +4,7 @@ from src.config import RAW_DIR
 from src.config import DATA_DIR
 from src.data.loaders import load_gpkg, load_excel
 
+# stacks GeoPandasDataframes
 def aggregate_gdf(gdfs):
     if not gdfs:
         return None
@@ -16,6 +17,7 @@ def aggregate_gdf(gdfs):
     return gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True), crs=target_crs)
 
 
+# splits UK boundaries and centroids by region
 def split_uk_spatial_by_region():
     boundaries = load_gpkg(RAW_DIR / "boundaries" / "msoa_2021_Boundaries_BSC.gpkg")
     centroids = pd.read_csv(RAW_DIR / "centroids" / "msoa_2021_PWCs.csv")
@@ -52,7 +54,7 @@ def split_uk_spatial_by_region():
 
     pd.Series(regions).to_csv(DATA_DIR / "regions" /"region_names.csv", index=False)
 
-
+# combines prepocessed boundaries and centroids into one
 def consolidate_uk_spatial():
     gdf_bounds = load_gpkg(RAW_DIR / "boundaries" / "msoa_2021_Boundaries_BSC.gpkg")
     cents = pd.read_csv(RAW_DIR / "centroids" / "msoa_2021_PWCs.csv")
@@ -67,6 +69,7 @@ def consolidate_uk_spatial():
     gdf_cents.to_file(save_path, driver="GPKG", layer="population_centroids")
     print(save_path)
 
+# maps speed data to MSOAs
 def map_speeds_uk():
     # read tables
     df_speeds = load_excel(RAW_DIR / "road" / "avg_speed_cgn0503.ods", "CGN0503d", "odf", 3)
@@ -99,23 +102,6 @@ def map_speeds_uk():
     save_path.parent.mkdir(parents=True, exist_ok=True)
     df_speeds_mapped.to_csv(save_path, index=False)
     print(save_path)
-
-    
-    # ---> uncomment for saving a GeoPackage for visual exploration
-    # gdf_uk_bounds = load_gpkg(DATA_DIR / "regions" / f"UK.gpkg", "msoa_boundaries")
-    # gdf_uk_speeds = gdf_uk_bounds.merge(
-    #     df_speeds_mapped[['MSOA21CD', 'avg_speed_kph']],
-    #     on='MSOA21CD',
-    #     how='left'
-    # )
-    # save_path = DATA_DIR / "allocation" / f"UK_speeds.gpkg"
-    # gdf_uk_speeds.to_file(save_path, driver="GPKG", layer="msoa_speeds")
-
-
-
-
-
-
 
 if __name__ == "__main__":
     split_uk_spatial_by_region()

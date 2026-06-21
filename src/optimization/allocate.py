@@ -9,6 +9,19 @@ from src.optimization.site_selection import choose_next_site, repick_site,calcul
 from src.data.loaders import load_gpkg
 from src.config import DATA_DIR
 
+
+'''
+Allocates units based on inputs:
+num_units - number of police units
+gdf_cents - GeoDataFrame of area's centroids
+substitution - Boolean, True to use substitution
+df_tiers - DataFrame of tiers/weights
+prob_pr - probability of unavailability of primary units
+prob_ba - probability of unavailability of backup units
+window_pr - responce window in minutes of primary units
+window_ba - responce window in minutes of backup units
+output_file_name - (Optional) name of the file to save the allocation in 
+'''
 def allocate(num_units, gdf_cents, substitution, df_tiers, prob_pr, prob_ba, window_pr, window_ba, output_file_name):
      # load speeds table
     df_speeds = pd.read_csv(DATA_DIR / 'speeds' / 'UK_speeds.csv')
@@ -55,49 +68,3 @@ def allocate(num_units, gdf_cents, substitution, df_tiers, prob_pr, prob_ba, win
                 f.write(f'{site}\n')
 
     return site_codes, twec, theoretical_max_twec
-    
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--area_file_name')
-    parser.add_argument('-p', '--police_units')
-    parser.add_argument('-s', '--substitution', action='store_true')
-    parser.add_argument('-o', '--output_name')
-    parser.add_argument('-t', '--tiers_file_name')
-    args = parser.parse_args()
-
-    # load area
-    if not args.area_file_name:
-        num_lsoas = 10
-        width = 15
-        gdf_cents = generate_mock_pwcs(num_lsoas=num_lsoas, width=width)
-    else:
-        gdf_cents = load_gpkg(DATA_DIR / f"{args.area_file_name}.gpkg", "population_centroids")
-
-    # load tiers
-    df_tiers = pd.read_csv(DATA_DIR / 'monthly_tiers' / f'{args.tiers_file_name}.csv')
-
-    # define num of police units
-    num_units = args.police_units or 10
-    num_units = int(num_units)
-    
-    # run allocation
-    site_codes, twec, theoretical_max_twec= allocate(num_units, gdf_cents, args.substitution, df_tiers, args.output_name)
-
-    # print("--------------Test Inputs---------------")
-    # if not args.area_file_name:
-    #     print(f"Grid: {width}x{width}km")
-    # print(f"Number of MSOAs: {len(gdf_cents)}")
-    print(f"Number of Police units: {num_units}")
-    # print("----------------Results-----------------")
-    # # print(f'Coverage: {allocation}')
-    # print(f'Police Sites (index): {chosen_sites}')
-    print(f'Police Sites (code): {site_codes}')
-    print(f'Current Network TWEC: {twec:.2f}')
-    print(f'Theoretical Max TWEC: {theoretical_max_twec:.2f}')
-    # print(f'Efficiency: {efficiency:.1%}')
-
-
-    # print("------------------Data-------------------")
-    # print(gdf_cents)

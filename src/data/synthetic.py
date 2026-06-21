@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 
+# was used in the initial stages of the project
 def generate_mock_pwcs(num_lsoas=5, seed=None, width=15):
     
     np.random.seed(seed)
