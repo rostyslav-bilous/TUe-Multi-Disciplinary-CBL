@@ -9,3 +9,6 @@ scipy
 geopandas
 streamlit
 leafmap
+odfpy
+ipykernel
+hdbscan
